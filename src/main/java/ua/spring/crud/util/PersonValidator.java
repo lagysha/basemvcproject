@@ -6,13 +6,15 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ua.spring.crud.dao.PersonDao;
 import ua.spring.crud.models.Person;
+import ua.spring.crud.repositories.PeopleRepository;
+
 @Component
 public class PersonValidator implements Validator {
 
     private final PersonDao personDao;
 
     @Autowired
-    public PersonValidator(PersonDao personDao) {
+    public PersonValidator(PersonDao personDao, PeopleRepository peopleRepository) {
         this.personDao = personDao;
     }
 

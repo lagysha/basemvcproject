@@ -1,24 +1,39 @@
 package ua.spring.crud.models;
 
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
-
+@Entity
+@Table(name = "person")
 public class Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
     @Size(min = 2,max = 100,message = "Invalid size of name")
     @Pattern(regexp = "[A-Z][a-z]+? [A-Z][a-z]+?"
             ,message = "Write Full Name using this format:Name Surname")
+    @Column(name = "full_name")
     private  String fullName;
 
-    @Pattern(regexp = "([0-2][0-9]|3[0-1])/(0[0-9]|1[0-2])/([0-9]{2})"
-            ,message = "Write date of birth using this format: 18/09/22")
-    private String dob;
+    @Column(name = "dob")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern= "yyyy-MM-dd")
+    private Date dob;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
 
     public Person(){}
 
-    public Person(String fullName, String dob) {
+    public Person(String fullName, Date dob) {
         this.fullName = fullName;
         this.dob = dob;
     }
@@ -39,12 +54,33 @@ public class Person {
         this.fullName = fullName;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return id == person.id && Objects.equals(fullName, person.fullName) && Objects.equals(dob, person.dob);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fullName, dob);
     }
 
     @Override
@@ -52,7 +88,7 @@ public class Person {
         return "Person{" +
                 "id=" + id +
                 ", name='" + fullName + '\'' +
-                ", address='" + dob + '\'' +
+                ", date_of_birth='" + dob + '\'' +
                 '}';
     }
 }
